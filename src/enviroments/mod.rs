@@ -25,7 +25,7 @@ impl Plugin for EnvironmentsPlugin {
 fn setup(
     mut cmds: Commands,
     textures: Res<loading::TextureAssets>,
-    query_player: Query<(&Transform, &Entity), With<Player>>,
+    query_player: Query<(&Transform, Entity), With<Player>>,
     
 ) {
 
