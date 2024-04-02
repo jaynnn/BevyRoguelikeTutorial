@@ -7,7 +7,7 @@ edition = "2021"
 exclude = ["dist", "build", "assets", "credits"]
 
 [workspace]
-members = ["mobile"]
+members = ["mobile", "crates/*"]
 
 [profile.dev.package."*"]
 opt-level = 3
@@ -64,13 +64,21 @@ bevy = { version = "0.13", default-features = false, features = [
 ] }
 bevy_kira_audio = { version = "0.19" }
 bevy_asset_loader = { version = "0.20" }
-rand = { version = "0.8.3" }
+rand = "0.8.3"
+leafwing-input-manager = "0.13.3"
+bevy_ecs_tilemap = {path = "crates/bevy_ecs_tilemap"}
+thiserror = "1.0.58"
+ldtk_rust = "0.6.0"
+serde = "1.0.197"
+serde_json = "1.0.115"
+log = "0.4.21"
+bevy_rapier2d = "0.25.0"
 webbrowser = { version = "0.8", features = ["hardened"] }
+bevy_common_assets = { version = "0.10.0", features = ["ron"] }
 
 # keep the following in sync with Bevy's dependencies
 winit = { version = "0.29", default-features = false }
 image = { version = "0.25.0", default-features = false }
-leafwing-input-manager = "0.13.3"
 
 [build-dependencies]
 embed-resource = "2.4.2"

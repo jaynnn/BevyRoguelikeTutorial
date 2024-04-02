@@ -3,6 +3,7 @@ use crate::loading::TextureAssets;
 use crate::GameState;
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::*;
+use bevy_rapier2d::prelude::*;
 
 pub struct PlayerPlugin;
 
@@ -31,14 +32,26 @@ impl Plugin for PlayerPlugin {
     }
 }
 
-fn spawn_player(mut commands: Commands, textures: Res<TextureAssets>) {
+
+
+pub fn spawn_player(mut commands: Commands, textures: Res<TextureAssets>) {
+    let transfrom = Transform::from_translation(Vec3::new(0., 0., 1.));
+    let sprite_size = 32.;
     commands
-        .spawn(SpriteBundle {
+        .spawn((SpriteBundle {
+            sprite: Sprite {
+                custom_size: Some(Vec2::new(sprite_size, sprite_size)),
+                ..default()
+            },
             texture: textures.player.clone(),
-            transform: Transform::from_translation(Vec3::new(0., 0., 1.)).with_scale(Vec3::splat(2.)),
+            transform: transfrom,
             ..Default::default()
-        })
-        .insert(Player)
-        .insert(InputManagerBundle::with_map(PlayerAction::default_input_map()))
-        .insert(Movement::default());
+        },
+        Player,
+        InputManagerBundle::with_map(PlayerAction::default_input_map()),
+        Movement::default(),
+        RigidBody::Dynamic,
+        Velocity::zero(),
+        Collider::cuboid(sprite_size / 2., sprite_size / 4.),
+    ));
 }
