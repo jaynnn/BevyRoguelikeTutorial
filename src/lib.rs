@@ -1,12 +1,11 @@
 #![allow(clippy::type_complexity)]
 
-mod actions;
 mod audio;
 mod loading;
 mod menu;
 mod player;
+mod components;
 
-use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;
 use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
@@ -38,7 +37,6 @@ impl Plugin for GamePlugin {
         app.init_state::<GameState>().add_plugins((
             LoadingPlugin,
             MenuPlugin,
-            ActionsPlugin,
             InternalAudioPlugin,
             PlayerPlugin,
         ));

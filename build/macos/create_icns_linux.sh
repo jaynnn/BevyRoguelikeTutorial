@@ -15,3 +15,4 @@ cp ../icon_1024x1024.png AppIcon.iconset/icon_512x512@2x.png
 png2icns ./AppIcon.icns AppIcon.iconset/icon_16x16.png AppIcon.iconset/icon_32x32.png AppIcon.iconset/icon_128x128.png AppIcon.iconset/icon_256x256.png AppIcon.iconset/icon_512x512.png
 mkdir -p src/Game.app/Contents/Resources
 mv AppIcon.icns src/Game.app/Contents/Resources/
+

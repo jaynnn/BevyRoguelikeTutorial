@@ -2,6 +2,9 @@
 
 One of [bracketproductions's roguelike tutorial](https://bfnightly.bracketproductions.com/) implementations.
 
-Thanks
+## Thanks
+* bevyengine/bevy
 * NiklasEi/bevy_game_template
 * amethyst/rustrogueliketutorial
+* Rustaceans
+* You

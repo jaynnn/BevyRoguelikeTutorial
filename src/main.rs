@@ -25,7 +25,7 @@ fn main() {
                 ..default()
             }),
             ..default()
-        }))
+        }).set(ImagePlugin::default_nearest()))
         .add_plugins(GamePlugin)
         .add_systems(Startup, set_window_icon)
         .run();
@@ -41,7 +41,7 @@ fn set_window_icon(
         return;
     };
     let icon_buf = Cursor::new(include_bytes!(
-        "../build/macos/AppIcon.iconset/icon_256x256.png"
+        "../build/icon_1024x1024.png"
     ));
     if let Ok(image) = image::load(icon_buf, image::ImageFormat::Png) {
         let image = image.into_rgba8();
