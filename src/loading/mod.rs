@@ -2,14 +2,12 @@ use crate::GameState;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_kira_audio::AudioSource;
+use bevy_common_assets::ron::RonAssetPlugin;
+
+pub mod data;
 
 pub struct LoadingPlugin;
 
-mod ron_config;
-
-/// This plugin loads all assets using [`AssetLoader`] from a third party bevy plugin
-/// Alternatively you can write the logic to load assets yourself
-/// If interested, take a look at <https://bevy-cheatbook.github.io/features/assets.html>
 impl Plugin for LoadingPlugin {
     fn build(&self, app: &mut App) {
         app
@@ -17,13 +15,14 @@ impl Plugin for LoadingPlugin {
                 LoadingState::new(GameState::Loading)
                 .continue_to_state(GameState::Menu)
                 .load_collection::<AudioAssets>()
-                .load_collection::<TextureAssets>(),
-            );
+                .load_collection::<TextureAssets>()
+                .load_collection::<ConfigSeatHandles>()
+                .load_collection::<ConfigTileHandles>()
+            )
+            .add_plugins(RonAssetPlugin::<data::SeatData>::new(&["seat.ron"]))
+            .add_plugins(RonAssetPlugin::<data::TileData>::new(&["tile.ron"]));
     }
 }
-
-// the following asset collections will be loaded during the State `GameState::Loading`
-// when done loading, they will be inserted as resources (see <https://github.com/NiklasEi/bevy_asset_loader>)
 
 #[derive(AssetCollection, Resource)]
 pub struct AudioAssets {
@@ -37,4 +36,16 @@ pub struct TextureAssets {
     pub player: Handle<Image>,
     #[asset(path = "textures/wall.png")]
     pub wall_tile: Handle<Image>,
+}
+
+#[derive(AssetCollection, Resource)]
+pub struct ConfigSeatHandles {
+    #[asset(path = "config/player.seat.ron")]
+    pub player: Handle<data::SeatData>,
+}
+
+#[derive(AssetCollection, Resource)]
+pub struct ConfigTileHandles {
+    #[asset(path = "config/wall.tile.ron")]
+    pub wall: Handle<data::TileData>,
 }

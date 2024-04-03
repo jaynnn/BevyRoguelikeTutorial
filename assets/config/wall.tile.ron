@@ -1,0 +1,5 @@
+TileData (
+    tile_size: (16., 16.),
+    map_size: (128, 128),
+    collider_size: (8., 8.),
+)

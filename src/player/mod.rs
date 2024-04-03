@@ -1,17 +1,16 @@
-use crate::components::Movement;
-use crate::loading::TextureAssets;
-use crate::GameState;
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 pub struct PlayerPlugin;
 
-mod control;
-mod audio;
+pub mod control;
+pub mod audio;
 
-pub use control::*;
-use audio::*;
+use crate::components::Movement;
+use crate::loading::TextureAssets;
+use crate::GameState;
+use crate::loading;
 
 #[derive(Component)]
 pub struct Player;
@@ -20,27 +19,36 @@ pub struct Player;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_plugins(InputManagerPlugin::<PlayerAction>::default())
+            .add_plugins(InputManagerPlugin::<control::PlayerAction>::default())
             .add_systems(OnEnter(GameState::Playing), spawn_player)
             .add_systems(Update, 
                 (
-                    move_player.run_if(in_state(GameState::Playing)),
-                    set_movement_actions.run_if(in_state(GameState::Playing)),
-                    control_flying_sound.after(set_movement_actions).run_if(in_state(GameState::Playing))
+                    control::move_player.run_if(in_state(GameState::Playing)),
+                    control::set_movement_actions.run_if(in_state(GameState::Playing)),
+                    audio::control_flying_sound.after(control::set_movement_actions).run_if(in_state(GameState::Playing))
                 )
             );
     }
 }
 
+pub fn spawn_player(
+    mut commands: Commands, 
+    textures: Res<TextureAssets>,
+    config: Res<loading::ConfigSeatHandles>,
+    seat_config: Res<Assets<loading::data::SeatData>>,
+) {
+    let player_config = seat_config.get(config.player.clone()).unwrap();
+    let player_size = player_config.sprite_size;
+    let player_collider_size = player_config.collider_size;
+    let player_transfrom = player_config.transform;
+    let player_collider_offset = player_config.collider_offset;
+    let collider_transform = player_transfrom - player_collider_offset;
 
-
-pub fn spawn_player(mut commands: Commands, textures: Res<TextureAssets>) {
-    let transfrom = Transform::from_translation(Vec3::new(0., 0., 1.));
-    let sprite_size = 32.;
+    let transfrom = Transform::from_translation(player_transfrom);
     commands
         .spawn((SpriteBundle {
             sprite: Sprite {
-                custom_size: Some(Vec2::new(sprite_size, sprite_size)),
+                custom_size: Some(player_size),
                 ..default()
             },
             texture: textures.player.clone(),
@@ -48,10 +56,16 @@ pub fn spawn_player(mut commands: Commands, textures: Res<TextureAssets>) {
             ..Default::default()
         },
         Player,
-        InputManagerBundle::with_map(PlayerAction::default_input_map()),
+        InputManagerBundle::with_map(control::PlayerAction::default_input_map()),
         Movement::default(),
-        RigidBody::Dynamic,
-        Velocity::zero(),
-        Collider::cuboid(sprite_size / 2., sprite_size / 4.),
-    ));
+    )).with_children(|parent| {
+        parent.spawn((
+            SpriteBundle {
+                transform: Transform::from_translation(collider_transform),
+                ..default()
+            },
+            RigidBody::KinematicPositionBased,
+            Collider::cuboid(player_collider_size.x, player_collider_size.y),
+        ));
+    });
 }

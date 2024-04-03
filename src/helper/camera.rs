@@ -12,27 +12,27 @@ pub fn movement(
     for (mut transform, mut ortho) in query.iter_mut() {
         let mut direction = Vec3::ZERO;
 
-        if keyboard_input.pressed(KeyCode::KeyA) {
+        if keyboard_input.pressed(KeyCode::Numpad4) {
             direction -= Vec3::new(1.0, 0.0, 0.0);
         }
 
-        if keyboard_input.pressed(KeyCode::KeyD) {
+        if keyboard_input.pressed(KeyCode::Numpad6) {
             direction += Vec3::new(1.0, 0.0, 0.0);
         }
 
-        if keyboard_input.pressed(KeyCode::KeyW) {
+        if keyboard_input.pressed(KeyCode::Numpad8) {
             direction += Vec3::new(0.0, 1.0, 0.0);
         }
 
-        if keyboard_input.pressed(KeyCode::KeyS) {
+        if keyboard_input.pressed(KeyCode::Numpad2) {
             direction -= Vec3::new(0.0, 1.0, 0.0);
         }
 
-        if keyboard_input.pressed(KeyCode::KeyZ) {
+        if keyboard_input.pressed(KeyCode::Numpad1) {
             ortho.scale += 0.1;
         }
 
-        if keyboard_input.pressed(KeyCode::KeyX) {
+        if keyboard_input.pressed(KeyCode::Numpad3) {
             ortho.scale -= 0.1;
         }
 

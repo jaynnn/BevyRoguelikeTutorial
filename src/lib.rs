@@ -1,5 +1,11 @@
 #![allow(clippy::type_complexity)]
 
+use bevy::app::App;
+#[cfg(debug_assertions)]
+use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
+
 mod audio;
 mod loading;
 mod menu;
@@ -14,11 +20,6 @@ use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
 use crate::player::PlayerPlugin;
 use crate::enviroments::EnvironmentsPlugin;
-
-use bevy::app::App;
-#[cfg(debug_assertions)]
-use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
-use bevy::prelude::*;
 
 // This example game uses States to separate logic
 // See https://bevy-cheatbook.github.io/programming/states.html
@@ -44,7 +45,10 @@ impl Plugin for GamePlugin {
             InternalAudioPlugin,
             PlayerPlugin,
             EnvironmentsPlugin,
-        ));
+            RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0),
+            RapierDebugRenderPlugin::default(),
+        ))
+        .add_systems(Update, helper::camera::movement);
 
         #[cfg(debug_assertions)]
         {
