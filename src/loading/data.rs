@@ -5,9 +5,9 @@ use serde::Deserialize;
 #[derive(Debug, Asset, Deserialize, TypePath)]
 pub struct SeatData {
     pub sprite_size: Vec2,
+    pub sprite_anchor: Vec2,
     pub transform: Vec3,
     pub collider_size: Vec2,
-    pub collider_offset: Vec3,
 }
 
 #[derive(Debug, Asset, Deserialize, TypePath)]

@@ -1,10 +1,11 @@
 
 use leafwing_input_manager::prelude::*;
 use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
 
 pub const FOLLOW_EPSILON: f32 = 5.;
 
-use crate::{components::Movement, player::Player};
+use crate::player::Player;
 
 #[derive(Actionlike, Debug, Clone, Eq, PartialEq, Reflect, Hash)]
 pub enum PlayerAction {
@@ -21,13 +22,12 @@ impl PlayerAction {
     }
 }
 
-
-pub fn set_movement_actions(
+pub fn move_player(
     touch_input: Res<Touches>,
-    mut player: Query<(&mut Movement, &Transform, &ActionState<PlayerAction>), With<Player>>,
     camera: Query<(&Camera, &GlobalTransform), With<Camera2d>>,
+    mut player_info: Query<(&Transform, &mut Velocity, &ActionState<PlayerAction>), With<Player>>,
 ) {
-    for (mut movement, player, action_state) in player.iter_mut() {
+    for (player_transform, mut rb_vels, action_state) in player_info.iter_mut() {
         if action_state.pressed(&PlayerAction::Move) {
             let mut player_movement = action_state
                         .clamped_axis_pair(&PlayerAction::Move)
@@ -37,33 +37,26 @@ pub fn set_movement_actions(
                 let (camera, camera_transform) = camera.single();
                 if let Some(touch_position) = camera.viewport_to_world_2d(camera_transform, touch_position)
                 {
-                    let diff = touch_position - player.translation.xy();
+                    let diff = touch_position - player_transform.translation.xy();
                     if diff.length() > FOLLOW_EPSILON {
                         player_movement = diff.normalize();
                     }
                 }
             }
-            movement.dir = Some(player_movement.normalize());
+    
+            let move_delta = player_movement.normalize();
+    
+            let speed = 150.;
+            if move_delta.length() > 0. {
+                // println!("+++++++ {:?}", move_delta.length());
+                rb_vels.linvel = move_delta * speed;
+                // println!("+++++++222222222 {:?}", rb_vels.linvel.length());
+            }
         } else {
-            movement.dir = None;
+            if rb_vels.linvel.length() > 0. {
+                // println!("========{:?}", rb_vels.linvel.length());
+                rb_vels.linvel = Vec2::ZERO.into();
+            }
         }
-    }
-}
-
-pub fn move_player(
-    time: Res<Time>,
-    mut player_query: Query<(&Movement, &mut Transform), With<Player>>,
-) {
-    for (movement, mut player_transform) in player_query.iter_mut() {
-        if movement.dir.is_none() {
-            continue;
-        }
-        let speed = 150.;
-        let movement = Vec3::new(
-            movement.dir.unwrap().x * speed * time.delta_seconds(),
-            movement.dir.unwrap().y * speed * time.delta_seconds(),
-            0.,
-        );
-        player_transform.translation += movement;
     }
 }

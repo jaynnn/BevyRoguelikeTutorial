@@ -7,7 +7,6 @@ pub struct PlayerPlugin;
 pub mod control;
 pub mod audio;
 
-use crate::components::Movement;
 use crate::loading::TextureAssets;
 use crate::GameState;
 use crate::loading;
@@ -24,8 +23,7 @@ impl Plugin for PlayerPlugin {
             .add_systems(Update, 
                 (
                     control::move_player.run_if(in_state(GameState::Playing)),
-                    control::set_movement_actions.run_if(in_state(GameState::Playing)),
-                    audio::control_flying_sound.after(control::set_movement_actions).run_if(in_state(GameState::Playing))
+                    audio::control_flying_sound.run_if(in_state(GameState::Playing))
                 )
             );
     }
@@ -41,31 +39,25 @@ pub fn spawn_player(
     let player_size = player_config.sprite_size;
     let player_collider_size = player_config.collider_size;
     let player_transfrom = player_config.transform;
-    let player_collider_offset = player_config.collider_offset;
-    let collider_transform = player_transfrom - player_collider_offset;
+    let sprite_anchor = player_config.sprite_anchor;
 
-    let transfrom = Transform::from_translation(player_transfrom);
     commands
         .spawn((SpriteBundle {
             sprite: Sprite {
                 custom_size: Some(player_size),
+                anchor: bevy::sprite::Anchor::Custom(sprite_anchor),
                 ..default()
             },
             texture: textures.player.clone(),
-            transform: transfrom,
+            transform: Transform::from_translation(player_transfrom),
             ..Default::default()
         },
-        Player,
         InputManagerBundle::with_map(control::PlayerAction::default_input_map()),
-        Movement::default(),
-    )).with_children(|parent| {
-        parent.spawn((
-            SpriteBundle {
-                transform: Transform::from_translation(collider_transform),
-                ..default()
-            },
-            RigidBody::KinematicPositionBased,
-            Collider::cuboid(player_collider_size.x, player_collider_size.y),
-        ));
-    });
+        Velocity::zero(),
+        Player,
+        RigidBody::Dynamic,
+        LockedAxes::ROTATION_LOCKED,
+        Collider::cuboid(player_collider_size.x, player_collider_size.y),
+        Name::new("player"),
+    ));
 }

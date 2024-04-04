@@ -5,6 +5,8 @@ use bevy::app::App;
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy::input::common_conditions::input_toggle_active;
 
 mod audio;
 mod loading;
@@ -14,12 +16,14 @@ mod components;
 mod enermy;
 mod enviroments;
 mod helper;
+mod physics;
 
 use crate::audio::InternalAudioPlugin;
 use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
 use crate::player::PlayerPlugin;
 use crate::enviroments::EnvironmentsPlugin;
+use crate::physics::PhysicsPlugin;
 
 // This example game uses States to separate logic
 // See https://bevy-cheatbook.github.io/programming/states.html
@@ -45,14 +49,19 @@ impl Plugin for GamePlugin {
             InternalAudioPlugin,
             PlayerPlugin,
             EnvironmentsPlugin,
+            PhysicsPlugin,
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0),
-            RapierDebugRenderPlugin::default(),
         ))
         .add_systems(Update, helper::camera::movement);
 
         #[cfg(debug_assertions)]
         {
-            app.add_plugins((FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin::default()));
+            app.add_plugins((
+                FrameTimeDiagnosticsPlugin, 
+                LogDiagnosticsPlugin::default(),
+                RapierDebugRenderPlugin::default(),
+                WorldInspectorPlugin::default().run_if(input_toggle_active(true, KeyCode::Escape)),
+            ));
         }
     }
 }

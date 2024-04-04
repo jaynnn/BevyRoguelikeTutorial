@@ -24,7 +24,7 @@ pub fn movement(
             direction += Vec3::new(0.0, 1.0, 0.0);
         }
 
-        if keyboard_input.pressed(KeyCode::Numpad2) {
+        if keyboard_input.pressed(KeyCode::Numpad5) {
             direction -= Vec3::new(0.0, 1.0, 0.0);
         }
 
