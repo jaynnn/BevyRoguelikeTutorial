@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
 
-mod wall;
+pub mod wall;
+pub mod tile;
 
 use crate::GameState;
 use crate::player;
