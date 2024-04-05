@@ -1,6 +1,6 @@
 ## Roguelike Tutorial - in Bevy
 
-One of [bracketproductions's roguelike tutorial](https://bfnightly.bracketproductions.com/) implementations, but with many many customize.
+One of [bracketproductions's roguelike tutorial](https://bfnightly.bracketproductions.com/) implementations, but with many many customization.
 
 ## Usage
 ```
